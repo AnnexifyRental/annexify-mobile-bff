@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: annexify-mobile-bff
+
+server:
+  port: 8082
