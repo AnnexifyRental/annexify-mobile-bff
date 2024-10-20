@@ -5,6 +5,9 @@ spring:
 server:
   port: 8082
 
-central:
+annexify:
   service:
-    url: http://localhost:8080
+    central:
+      url: http://localhost:8080
+    storage:
+      url: http://localhost:8083

@@ -1,6 +1,7 @@
 package com.anuradha.annexifymobilebff.service;
 
 import com.anuradha.annexifymobilebff.controller.outbound.CentralServiceClient;
+import com.anuradha.annexifymobilebff.controller.outbound.StorageServiceClient;
 import com.anuradha.annexifymobilebff.dto.IdResponseDto;
 import com.anuradha.annexifymobilebff.dto.PostDto;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,11 @@ import java.util.Objects;
 public class PostService {
 
     private final CentralServiceClient centralServiceClient;
+    private final StorageServiceClient storageServiceClient;
 
-    public PostService(CentralServiceClient centralServiceClient) {
+    public PostService(CentralServiceClient centralServiceClient, StorageServiceClient storageServiceClient) {
         this.centralServiceClient = centralServiceClient;
+        this.storageServiceClient = storageServiceClient;
     }
 
     public IdResponseDto savePost(PostDto postDto) {
@@ -33,25 +36,19 @@ public class PostService {
     public void uploadImages(String id, MultipartFile thumbnail, List<MultipartFile> images) {
         validateUploadImagesRequest(thumbnail, images);
 
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Post not found"));
+        String thumbnailUrl = uploadImage(thumbnail);
+        List<String> imageUrls = images.stream()
+                .map(this::uploadImage)
+                .filter(Objects::nonNull)
+                .toList();
 
-        post.setThumbnail(uploadImage(thumbnail));
-        postRepository.save(post);
-
-        if (images == null || images.isEmpty()) return;
-        postImageRepository.saveAll(
-                images.stream()
-                        .map(x -> new PostImage(post, uploadImage(x)))
-                        .filter(x -> Objects.nonNull(x.getUrl()))
-                        .toList()
-        );
+        centralServiceClient.uploadPostImages(id, thumbnailUrl, imageUrls);
 
     }
 
     private String uploadImage(MultipartFile image) {
-//            return awsS3Client.uploadFile("central-images/" + image.getOriginalFilename(), image.getBytes(), image.getContentType());
-        return fileUploaderService.uploadFile(image);
+        return storageServiceClient.uploadImage(image);
+
     }
 
     private void validateUploadImagesRequest(MultipartFile thumbnail, List<MultipartFile> images) {
