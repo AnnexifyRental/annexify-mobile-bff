@@ -19,6 +19,7 @@ public class JwtUtilService {
             String payload = new String(decoder.decode(chunks[1]));
             return new ObjectMapper().readValue(payload, TokenDataDto.class);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Failed to decode token");
         }
     }

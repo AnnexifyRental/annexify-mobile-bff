@@ -6,6 +6,8 @@ server:
   port: 8082
   servlet:
     context-path: /api/app
+  error:
+    include-message: always
 
 annexify:
   service:
