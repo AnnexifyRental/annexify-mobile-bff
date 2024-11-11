@@ -21,6 +21,11 @@ public class PostController {
         return postService.savePost(postDto);
     }
 
+    @PutMapping
+    public void updatePost(@RequestBody PostDto postDto) {
+        postService.updatePost(postDto);
+    }
+
     @PutMapping("images")
     public void uploadPostImages(@RequestParam String id, MultipartFile thumbnail, List<MultipartFile> images) {
         postService.uploadImages(id, thumbnail, images);
@@ -29,6 +34,16 @@ public class PostController {
     @GetMapping
     public List<PostDto> findAll() {
         return postService.findAll();
+    }
+
+    @GetMapping("my")
+    public List<PostDto> findMyPosts() {
+        return postService.findMyPosts();
+    }
+
+    @GetMapping("by/id")
+    public PostDto findById(@RequestParam String id) {
+        return postService.findById(id);
     }
 
     @DeleteMapping

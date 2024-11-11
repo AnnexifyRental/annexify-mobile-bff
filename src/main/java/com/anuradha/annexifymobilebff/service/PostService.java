@@ -78,4 +78,15 @@ public class PostService {
     }
 
 
+    public PostDto findById(String id) {
+        return centralServiceClient.findPostById(id);
+    }
+
+    public void updatePost(PostDto postDto) {
+        centralServiceClient.updatePost(postDto);
+    }
+
+    public List<PostDto> findMyPosts() {
+        return null;
+    }
 }

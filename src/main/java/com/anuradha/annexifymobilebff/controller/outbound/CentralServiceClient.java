@@ -3,6 +3,7 @@ package com.anuradha.annexifymobilebff.controller.outbound;
 import com.anuradha.annexifymobilebff.dto.IdResponseDto;
 import com.anuradha.annexifymobilebff.dto.PostDto;
 import com.anuradha.annexifymobilebff.dto.PostImageSaveDto;
+import com.anuradha.annexifymobilebff.dto.UserSaveDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -36,5 +37,17 @@ public class CentralServiceClient {
 
     public void uploadPostImages(String id, String thumbnailUrl, List<String> imageUrls) {
         restTemplate.put(baseUrl + "/post/images", new PostImageSaveDto(id, thumbnailUrl, imageUrls));
+    }
+
+    public PostDto findPostById(String id) {
+        return restTemplate.getForObject(baseUrl + "/post/by/id?id=" + id, PostDto.class);
+    }
+
+    public void updatePost(PostDto postDto) {
+        restTemplate.put(baseUrl + "/post", postDto);
+    }
+
+    public void saveUser(UserSaveDto userDto) {
+        restTemplate.postForObject(baseUrl + "/user", userDto, Void.class);
     }
 }
